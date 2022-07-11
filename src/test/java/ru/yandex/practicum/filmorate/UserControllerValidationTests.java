@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.controllers.UserController;
 import ru.yandex.practicum.controllers.ValidationException;
 import ru.yandex.practicum.model.User;
@@ -13,7 +12,6 @@ import java.time.Month;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(classes = UserController.class)
 class UserControllerValidationTests {
 
     UserController userController;
