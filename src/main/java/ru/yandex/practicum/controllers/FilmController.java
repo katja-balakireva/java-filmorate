@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.model.Film;
-import ru.yandex.practicum.model.User;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -46,7 +45,7 @@ public class FilmController {
         if (validateFilm(film)) {
             film.setId(++idCounter);
             films.add(film);
-            log.info("Добавлен фильм: {}",film.getName());
+            log.info("Добавлен фильм: {}", film.getName());
         }
         return film;
     }
@@ -60,25 +59,20 @@ public class FilmController {
             log.warn("Ошибка валидации названия фильма");
             throw new ValidationException("Пустое название фильма");
         }
-
         if (film.getDescription().length() > maxDescriptionLength) {
             log.warn("Ошибка валидации описания фильма");
             throw new ValidationException(
-                    String.format("Описание фильма содержит более %d символов",maxDescriptionLength));
+                    String.format("Описание фильма содержит более %d символов", maxDescriptionLength));
         }
-
-        if (film.getReleaseDate().isBefore(releaseDate)){
+        if (film.getReleaseDate().isBefore(releaseDate)) {
             log.warn("Ошибка валидации даты релиза фильма");
             throw new ValidationException(
-                    String.format("Дата релиза фильма до %s",releaseDate.toString()));
+                    String.format("Дата релиза фильма до %s", releaseDate.toString()));
         }
-
         if (film.getDuration() < 0) {
             log.warn("Ошибка валидации продолжительности фильма");
             throw new ValidationException("Продолжительность фильма отрицательная");
         }
-
         return true;
-
     }
 }

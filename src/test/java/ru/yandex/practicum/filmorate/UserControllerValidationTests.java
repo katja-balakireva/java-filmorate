@@ -1,13 +1,9 @@
 package ru.yandex.practicum.filmorate;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.controllers.FilmController;
-import ru.yandex.practicum.controllers.FilmorateApplication;
 import ru.yandex.practicum.controllers.UserController;
 import ru.yandex.practicum.controllers.ValidationException;
 import ru.yandex.practicum.model.User;
@@ -31,7 +27,7 @@ class UserControllerValidationTests {
                 .email("test@test")
                 .login("userLogin")
                 .name("userName")
-                .birthday(LocalDate.of(2000, Month.APRIL,2))
+                .birthday(LocalDate.of(2000, Month.APRIL, 2))
                 .build();
     }
 
@@ -41,7 +37,7 @@ class UserControllerValidationTests {
 
         user.setName("");
         userController.addUser(user);
-        assertEquals(user.getName(),user.getLogin(),"Логин и email не совпадают в случае пустого логина");
+        assertEquals(user.getName(), user.getLogin(), "Логин и email не совпадают в случае пустого логина");
     }
 
     @Test
@@ -82,7 +78,7 @@ class UserControllerValidationTests {
     @DisplayName("should throw exception if invalid user birthday")
     void shouldThrowExceptionIfInvalidUserBirthday() throws ValidationException {
 
-        user.setBirthday(LocalDate.of(2030, Month.APRIL,2));
+        user.setBirthday(LocalDate.of(2030, Month.APRIL, 2));
 
         final ValidationException exception = assertThrows(
                 ValidationException.class,
@@ -96,7 +92,7 @@ class UserControllerValidationTests {
         User emptyUser = User.builder()
                 .build();
 
-         assertThrows(
+        assertThrows(
                 NullPointerException.class,
                 () -> userController.addUser(emptyUser));
 

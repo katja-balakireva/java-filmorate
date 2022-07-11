@@ -5,10 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.controllers.FilmController;
-import ru.yandex.practicum.controllers.UserController;
 import ru.yandex.practicum.controllers.ValidationException;
 import ru.yandex.practicum.model.Film;
-import ru.yandex.practicum.model.User;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -38,7 +36,7 @@ class FilmControllerValidationTests {
     void shouldThrowExceptionIfInvalidFilmName() throws ValidationException {
 
         filmController.addFilm(film);
-        assertEquals(filmController.getAllFilms().size(),1,"Фильм не добавлен в список");
+        assertEquals(filmController.getAllFilms().size(), 1, "Фильм не добавлен в список");
 
         film.setName("");
         final ValidationException exception = assertThrows(
@@ -52,7 +50,7 @@ class FilmControllerValidationTests {
     void shouldThrowExceptionIfInvalidFilmDescription() throws ValidationException {
 
         filmController.addFilm(film);
-        assertEquals(filmController.getAllFilms().size(),1,"Фильм не добавлен в список");
+        assertEquals(filmController.getAllFilms().size(), 1, "Фильм не добавлен в список");
 
         String longDescription = "d".repeat(300);
 
@@ -69,7 +67,7 @@ class FilmControllerValidationTests {
     void shouldThrowExceptionIfInvalidReleaseDate() throws ValidationException {
 
         filmController.addFilm(film);
-        assertEquals(filmController.getAllFilms().size(),1,"Фильм не добавлен в список");
+        assertEquals(filmController.getAllFilms().size(), 1, "Фильм не добавлен в список");
 
         LocalDate releaseDate = LocalDate.of(1895, Month.DECEMBER, 28);
         LocalDate wrongDate = LocalDate.of(1880, Month.DECEMBER, 10);

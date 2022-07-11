@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import ru.yandex.practicum.model.Film;
 import ru.yandex.practicum.model.User;
 
 import java.time.LocalDate;
@@ -55,33 +54,26 @@ public class UserController {
         if (user.getName().isBlank() || user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
-
         if (user.getEmail().isBlank() || user.getEmail().isEmpty()) {
             log.warn("Ошибка валидации email пользователя");
             throw new ValidationException("Пустой email пользователя");
         }
-
         if (!user.getEmail().contains("@")) {
             log.warn("Ошибка валидации email пользователя");
             throw new ValidationException("email пользователя не содержит @");
         }
-
         if (user.getLogin().isBlank() || user.getLogin().isEmpty()) {
             log.warn("Ошибка валидации логина пользователя");
             throw new ValidationException("Пустой логин пользователя");
         }
-
         if (user.getLogin().contains(" ")) {
             log.warn("Ошибка валидации логина пользователя");
             throw new ValidationException("Логин пользователя содержит пробелы");
         }
-
         if (user.getBirthday().isAfter(LocalDate.now())) {
             log.warn("Ошибка валидации даты рождения пользователя");
             throw new ValidationException("Дата рождения пользователя в будущем");
         }
-
         return true;
-
     }
 }
