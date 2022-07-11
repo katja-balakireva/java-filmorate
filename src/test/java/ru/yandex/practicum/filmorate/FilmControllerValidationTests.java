@@ -14,8 +14,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FilmControllerValidationTests {
 
-    FilmController filmController;
-    Film film;
+    private FilmController filmController;
+    private Film film;
 
     @BeforeEach
     public void init() {

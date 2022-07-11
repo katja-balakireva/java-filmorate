@@ -14,8 +14,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UserControllerValidationTests {
 
-    UserController userController;
-    User user;
+    private UserController userController;
+    private User user;
 
     @BeforeEach
     public void init() {
