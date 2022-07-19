@@ -1,8 +1,10 @@
 package ru.yandex.practicum.service;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.exceptions.ServerErrorException;
 import ru.yandex.practicum.model.User;
 import ru.yandex.practicum.storage.UserStorage;
 
@@ -12,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
+@Getter
 public class UserService {
 
     UserStorage userStorage;
@@ -28,13 +31,10 @@ public class UserService {
 
         if (user != null && friend != null) {
 
-            Set<Long> usersFriends = user.getFriendsId();
-            Set<Long> friendsFriends = friend.getFriendsId();
+            user.setAndCheckFriendsId(friendId);
+            friend.setAndCheckFriendsId(userId);
 
-            usersFriends.add(friendId);
-            friendsFriends.add(userId);
-
-        } else throw new RuntimeException("Несуществующий id");
+        } else throw new ServerErrorException("Ошибка сервера");
     }
 
     public void removeFriend(long userId, long friendId) {
@@ -48,7 +48,7 @@ public class UserService {
 
             usersFriends.remove(friendId);
             friendsFriends.remove(userId);
-        } else throw new RuntimeException("Несуществующий id");
+        } else throw new ServerErrorException("Ошибка сервера");
     }
 
     public List<User> getAllFriends(long userId) {

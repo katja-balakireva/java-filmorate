@@ -10,7 +10,6 @@ import java.util.Set;
 
 @Data
 @Builder
-@NonNull
 public class Film {
 
     private long id;
@@ -18,7 +17,14 @@ public class Film {
     private String description;
     private LocalDate releaseDate;
     private int duration;
-    @Builder.Default
-    private Set<Long> likesId = new HashSet<>(); //id юзеров, которые оставили лайк
+    private Set<Long> likesId; //id юзеров, которые оставили лайк
 
+    public void setAndCheckLikes(long userId) {
+        if (this.likesId == null) {
+            this.likesId = new HashSet<>();
+            this.likesId.add(userId);
+        } else {
+            this.likesId.add(userId);
+        }
+    }
 }

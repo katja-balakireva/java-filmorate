@@ -3,6 +3,7 @@ package ru.yandex.practicum.model;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
+import lombok.Value;
 import org.springframework.lang.Nullable;
 
 import java.time.LocalDate;
@@ -11,7 +12,6 @@ import java.util.Set;
 
 @Data
 @Builder
-@NonNull
 public class User {
 
     private long id;
@@ -19,7 +19,14 @@ public class User {
     private String login;
     private String name;
     private LocalDate birthday;
-    @Builder.Default
-    private Set<Long> friendsId = new HashSet<>();
+    private Set<Long> friendsId;
 
+    public void setAndCheckFriendsId(long friendsId) {
+        if (this.friendsId == null) {
+            this.friendsId = new HashSet<>();
+            this.friendsId.add(friendsId);
+        } else {
+            this.friendsId.add(friendsId);
+        }
+    }
 }

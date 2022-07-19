@@ -1,22 +1,17 @@
 package ru.yandex.practicum.storage;
 
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.server.ResponseStatusException;
-import ru.yandex.practicum.controllers.ValidationException;
+import ru.yandex.practicum.exceptions.NotFoundException;
+import ru.yandex.practicum.exceptions.ValidationException;
 import ru.yandex.practicum.model.User;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 @Component
+@Slf4j
 public class InMemoryUserStorage implements UserStorage{
 
     private static long idCounter = 0;
@@ -35,7 +30,6 @@ public class InMemoryUserStorage implements UserStorage{
             long newId = ++idCounter;
             user.setId(newId);
             users.add(user);
-          //  log.info("Добавлен пользователь: {} с id: {}", user.getLogin(), user.getId());
         }
         return user;
     }
@@ -48,14 +42,14 @@ public class InMemoryUserStorage implements UserStorage{
                 if (u.getId() == user.getId()) {
                     users.remove(u);
                     users.add(user);
-                    break;
-                     //проверить как удаляются
-                   // log.info("Информация о пользователе {} обновлена.", user.getLogin());
+                    return user;
                 }
             }
+            throw new NotFoundException("Пользователь с таким id не найден");
+        } else {
+            throw new ValidationException("Невозможно обновить информацию о пользователе");
         }
-        return user;
-        }
+    }
 
     @Override
     public User remove(User user) {
@@ -63,10 +57,11 @@ public class InMemoryUserStorage implements UserStorage{
         if (validateUser(user)) {
                 if (users.contains(user)) {
                     users.remove(user);
-                    // log.info("Пользователь с логином {} удалён.", user.getLogin());
+                } else {
+                    throw new NotFoundException("Такого пользователя нет в списке пользователей");
                 }
             }
-        return user; //проверить не будет ли ошибки
+        return user;
     }
 
     @Override
@@ -76,12 +71,13 @@ public class InMemoryUserStorage implements UserStorage{
 
     @Override
     public User getById(long userId) {
+
         for (User u: users) {
             if (u.getId() == userId) {
                 return u;
             }
         }
-        return null;
+        throw new NotFoundException("Пользователь с таким id не найден");
     }
 
     private boolean validateUser(User user) throws ValidationException {
@@ -90,23 +86,23 @@ public class InMemoryUserStorage implements UserStorage{
             user.setName(user.getLogin());
         }
         if (user.getEmail().isBlank() || user.getEmail().isEmpty()) {
-           // log.warn("Ошибка валидации email пользователя");
+            log.warn("Ошибка валидации email пользователя");
             throw new ValidationException("Пустой email пользователя");
         }
         if (!user.getEmail().contains("@")) {
-         //   log.warn("Ошибка валидации email пользователя");
+            log.warn("Ошибка валидации email пользователя");
             throw new ValidationException("email пользователя не содержит @");
         }
         if (user.getLogin().isBlank() || user.getLogin().isEmpty()) {
-          //  log.warn("Ошибка валидации логина пользователя");
+            log.warn("Ошибка валидации логина пользователя");
             throw new ValidationException("Пустой логин пользователя");
         }
         if (user.getLogin().contains(" ")) {
-         //   log.warn("Ошибка валидации логина пользователя");
+            log.warn("Ошибка валидации логина пользователя");
             throw new ValidationException("Логин пользователя содержит пробелы");
         }
         if (user.getBirthday().isAfter(LocalDate.now())) {
-          //  log.warn("Ошибка валидации даты рождения пользователя");
+            log.warn("Ошибка валидации даты рождения пользователя");
             throw new ValidationException("Дата рождения пользователя в будущем");
         }
         return true;
