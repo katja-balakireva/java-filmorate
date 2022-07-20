@@ -9,6 +9,7 @@ import ru.yandex.practicum.model.Film;
 import ru.yandex.practicum.storage.FilmStorage;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Getter
@@ -51,25 +52,24 @@ public class FilmService {
 
     public List<Film> getPopularFilms(int count) {
 
-        Set<Film> allFilms = filmStorage.getAll();
+        Map<Film, Integer> newMap = new HashMap<>();
 
-        Map<Integer, Film> likesMap = new TreeMap<>(Comparator.reverseOrder());
-
-        for (Film f : allFilms) {
+        for (Film f : filmStorage.getAll()) {
             if (f.getLikesId() != null) {
-                likesMap.put(f.getLikesId().size(), f);
+                newMap.put(f, f.getLikesId().size());
             } else {
-                likesMap.put(0, f);
+                newMap.put(f, 0);
             }
         }
 
-        List<Film> valuesList = new ArrayList<>(likesMap.values());
+        List<Film> sorted = newMap.entrySet().stream()
+                .sorted(Map.Entry.<Film, Integer>comparingByValue().reversed())
+                .map(Map.Entry::getKey)
+                .limit(count)
+                .collect(Collectors.toList());
 
-        if (valuesList.size() >= count) {
-            return valuesList.subList(0, count);
-        } else {
-            return valuesList;
-        }
+        return sorted;
     }
 }
+
 
