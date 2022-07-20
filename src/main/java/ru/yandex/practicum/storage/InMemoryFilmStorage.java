@@ -13,16 +13,16 @@ import java.util.Set;
 
 @Component
 @Slf4j
-public class InMemoryFilmStorage implements FilmStorage{
+public class InMemoryFilmStorage implements FilmStorage {
 
     private static final LocalDate RELEASE_DATE = LocalDate.of(1895, Month.DECEMBER, 28);
     private static int idCounter = 0;
     private Set<Film> films = new HashSet<>();
 
     @Override
-    public Film add(Film film){
+    public Film add(Film film) {
 
-        for (Film f: films) {
+        for (Film f : films) {
             if (f.getId() == film.getId()) {
                 throw new ValidationException("Фильм с таким id уже существует");
             }
@@ -56,14 +56,14 @@ public class InMemoryFilmStorage implements FilmStorage{
     @Override
     public Film remove(Film film) {
 
-            if (validateFilm(film)) {
-                if (films.contains(film)) {
-                    films.remove(film);
-                } else {
-                    throw new NotFoundException("Такого фильма нет в списке фильмов");
-                }
+        if (validateFilm(film)) {
+            if (films.contains(film)) {
+                films.remove(film);
+            } else {
+                throw new NotFoundException("Такого фильма нет в списке фильмов");
             }
-            return film;
+        }
+        return film;
     }
 
     @Override
@@ -73,7 +73,7 @@ public class InMemoryFilmStorage implements FilmStorage{
 
     @Override
     public Film getById(long filmId) {
-        for (Film f: films) {
+        for (Film f : films) {
             if (f.getId() == filmId) {
                 return f;
             }
@@ -104,6 +104,4 @@ public class InMemoryFilmStorage implements FilmStorage{
         }
         return true;
     }
-
-
 }

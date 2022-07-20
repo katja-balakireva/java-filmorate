@@ -4,17 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.exceptions.NotFoundException;
 import ru.yandex.practicum.exceptions.ServerErrorException;
 import ru.yandex.practicum.exceptions.ValidationException;
 import ru.yandex.practicum.model.Film;
-import ru.yandex.practicum.model.User;
 import ru.yandex.practicum.service.FilmService;
 
-import java.time.LocalDate;
-import java.time.Month;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,9 +19,9 @@ import java.util.Set;
 @RequestMapping("/films")
 public class FilmController {
 
- FilmService filmService;
+    FilmService filmService;
 
- @Autowired
+    @Autowired
     public FilmController(FilmService filmService) {
         this.filmService = filmService;
     }
@@ -68,7 +63,7 @@ public class FilmController {
     @PutMapping(value = "{id}/like/{userId}")
     public void addLike(@PathVariable long id, @PathVariable long userId) {
         log.info("Пользователь c id {} поставил лайк фильму с id {}", userId, id);
-        filmService.addLike(id,userId);
+        filmService.addLike(id, userId);
     }
 
     @DeleteMapping(value = "{id}/like/{userId}")
@@ -80,9 +75,9 @@ public class FilmController {
     @GetMapping(value = "/popular")
     public List<Film> getPopularFilms(@RequestParam(value = "count", defaultValue = "10",
             required = false) int count) {
-     List<Film> popularFilms = filmService.getPopularFilms(count);
-     log.info("Получен список {} самых популярных фильмов: {} ", popularFilms.size(), popularFilms);
-     return popularFilms;
+        List<Film> popularFilms = filmService.getPopularFilms(count);
+        log.info("Получен список {} самых популярных фильмов: {} ", popularFilms.size(), popularFilms);
+        return popularFilms;
     }
 
     @ExceptionHandler

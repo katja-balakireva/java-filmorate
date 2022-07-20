@@ -2,9 +2,6 @@ package ru.yandex.practicum.model;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.NonNull;
-import lombok.Value;
-import org.springframework.lang.Nullable;
 
 import java.time.LocalDate;
 import java.util.HashSet;

@@ -6,12 +6,9 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.exceptions.NotFoundException;
 import ru.yandex.practicum.exceptions.ServerErrorException;
 import ru.yandex.practicum.model.Film;
-import ru.yandex.practicum.model.User;
 import ru.yandex.practicum.storage.FilmStorage;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Getter
@@ -59,7 +56,7 @@ public class FilmService {
         Map<Integer, Film> likesMap = new TreeMap<>(Comparator.reverseOrder());
 
         for (Film f : allFilms) {
-            if (f.getLikesId()!= null) {
+            if (f.getLikesId() != null) {
                 likesMap.put(f.getLikesId().size(), f);
             } else {
                 likesMap.put(0, f);
@@ -69,11 +66,10 @@ public class FilmService {
         List<Film> valuesList = new ArrayList<>(likesMap.values());
 
         if (valuesList.size() >= count) {
-            return valuesList.subList(0,count -1);
+            return valuesList.subList(0, count);
         } else {
             return valuesList;
         }
-
     }
 }
 

@@ -2,7 +2,6 @@ package ru.yandex.practicum.service;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.exceptions.ServerErrorException;
 import ru.yandex.practicum.model.User;
@@ -57,7 +56,7 @@ public class UserService {
         Set<Long> userFriendsIdList = user.getFriendsId();
 
         if (userFriendsIdList != null) {
-            for (Long id: user.getFriendsId()) {
+            for (Long id : user.getFriendsId()) {
                 User friend = userStorage.getById(id);
                 friendsList.add(friend);
             }
@@ -71,15 +70,15 @@ public class UserService {
         Set<Long> otherFriendsIdList = userStorage.getById(otherId).getFriendsId();
         List<User> commonFriendsList = new ArrayList<>();
 
-       if (userFriendsIdList != null && otherFriendsIdList != null) {
-           Set<Long> commonFriendsIdList = new HashSet<>(userFriendsIdList);
-           commonFriendsIdList.retainAll(otherFriendsIdList);
+        if (userFriendsIdList != null && otherFriendsIdList != null) {
+            Set<Long> commonFriendsIdList = new HashSet<>(userFriendsIdList);
+            commonFriendsIdList.retainAll(otherFriendsIdList);
 
-           for (Long id: commonFriendsIdList) {
-               User u = userStorage.getById(id);
-               commonFriendsList.add(u);
-           }
-       }
-       return commonFriendsList;
+            for (Long id : commonFriendsIdList) {
+                User u = userStorage.getById(id);
+                commonFriendsList.add(u);
+            }
+        }
+        return commonFriendsList;
     }
 }

@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.exceptions.NotFoundException;
 import ru.yandex.practicum.exceptions.ServerErrorException;
 import ru.yandex.practicum.exceptions.ValidationException;
@@ -36,23 +35,23 @@ public class UserController {
 
     @GetMapping(value = "{userId}")
     public User getById(@PathVariable long userId) {
-            User user = userService.getUserStorage().getById(userId);
-            log.info("Получен пользователь {} с id {}", user.getLogin(), user.getId());
-            return user;
+        User user = userService.getUserStorage().getById(userId);
+        log.info("Получен пользователь {} с id {}", user.getLogin(), user.getId());
+        return user;
     }
 
     @PostMapping
     public User addUser(@RequestBody User user) {
-       User addedUser = userService.getUserStorage().add(user);
-       log.info("Добавлен пользователь: {} с id: {}", addedUser.getLogin(), addedUser.getId());
-       return addedUser;
+        User addedUser = userService.getUserStorage().add(user);
+        log.info("Добавлен пользователь: {} с id: {}", addedUser.getLogin(), addedUser.getId());
+        return addedUser;
     }
 
     @PutMapping
     public User updateUser(@RequestBody User user) {
-            User updatedUser = userService.getUserStorage().update(user);
-            log.info("Информация о пользователе {} обновлена.", updatedUser.getLogin());
-            return updatedUser;
+        User updatedUser = userService.getUserStorage().update(user);
+        log.info("Информация о пользователе {} обновлена.", updatedUser.getLogin());
+        return updatedUser;
     }
 
     @DeleteMapping
@@ -70,7 +69,7 @@ public class UserController {
     @DeleteMapping(value = "{id}/friends/{friendId}")
     public void deleteFriend(@PathVariable long id, @PathVariable long friendId) {
         log.info("Пользователь c id {} удалил друга c id {}", id, friendId);
-        userService.removeFriend(id,friendId);
+        userService.removeFriend(id, friendId);
     }
 
     @GetMapping(value = "{id}/friends")
@@ -80,9 +79,9 @@ public class UserController {
         return friendsList;
     }
 
-    @GetMapping (value = "{id}/friends/common/{otherId}")
+    @GetMapping(value = "{id}/friends/common/{otherId}")
     public List<User> getCommonFriends(@PathVariable long id, @PathVariable long otherId) {
-        List<User> commonFriendsList = userService.getCommonFriends(id,otherId);
+        List<User> commonFriendsList = userService.getCommonFriends(id, otherId);
         log.info("Получены общие друзья пользователей {} и {}: {}", id, otherId, commonFriendsList);
         return commonFriendsList;
     }

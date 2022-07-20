@@ -12,7 +12,7 @@ import java.util.Set;
 
 @Component
 @Slf4j
-public class InMemoryUserStorage implements UserStorage{
+public class InMemoryUserStorage implements UserStorage {
 
     private static long idCounter = 0;
     private Set<User> users = new HashSet<>();
@@ -20,7 +20,7 @@ public class InMemoryUserStorage implements UserStorage{
 
     @Override
     public User add(User user) {
-        for (User u: users) {
+        for (User u : users) {
             if (u.getEmail().equals(user.getEmail())) {
                 throw new ValidationException("Пользователь с таким email уже существует");
             }
@@ -55,12 +55,12 @@ public class InMemoryUserStorage implements UserStorage{
     public User remove(User user) {
 
         if (validateUser(user)) {
-                if (users.contains(user)) {
-                    users.remove(user);
-                } else {
-                    throw new NotFoundException("Такого пользователя нет в списке пользователей");
-                }
+            if (users.contains(user)) {
+                users.remove(user);
+            } else {
+                throw new NotFoundException("Такого пользователя нет в списке пользователей");
             }
+        }
         return user;
     }
 
@@ -72,7 +72,7 @@ public class InMemoryUserStorage implements UserStorage{
     @Override
     public User getById(long userId) {
 
-        for (User u: users) {
+        for (User u : users) {
             if (u.getId() == userId) {
                 return u;
             }
