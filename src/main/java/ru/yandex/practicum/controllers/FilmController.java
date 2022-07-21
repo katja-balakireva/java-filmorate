@@ -19,7 +19,7 @@ import java.util.Set;
 @RequestMapping("/films")
 public class FilmController {
 
-    FilmService filmService;
+    private FilmService filmService;
 
     @Autowired
     public FilmController(FilmService filmService) {
@@ -28,28 +28,28 @@ public class FilmController {
 
     @GetMapping
     public Set<Film> getAllFilms() {
-        Set<Film> filmList = filmService.getFilmStorage().getAll();
+        Set<Film> filmList = filmService.getAllFilms();
         log.info("Получен список из {} фильмов", filmList.size());
         return filmList;
     }
 
     @GetMapping(value = "{filmId}")
     public Film getById(@PathVariable long filmId) {
-        Film film = filmService.getFilmStorage().getById(filmId);
+        Film film = filmService.getFilmById(filmId);
         log.info("Получен фильм {} с id {}", film.getName(), film.getId());
         return film;
     }
 
     @PostMapping
     public Film addFilm(@RequestBody Film film) {
-        Film addedFilm = filmService.getFilmStorage().add(film);
+        Film addedFilm = filmService.addFilm(film);
         log.info("Добавлен фильм {} с id {}", film.getName(), film.getId());
         return addedFilm;
     }
 
     @PutMapping
     public Film updateFilm(@RequestBody Film film) {
-        Film updatedFilm = filmService.getFilmStorage().update(film);
+        Film updatedFilm = filmService.updateFilm(film);
         log.info("Информация о фильме {} обновлена.", updatedFilm.getName());
         return updatedFilm;
     }
@@ -57,7 +57,7 @@ public class FilmController {
     @DeleteMapping
     public void deleteFilm(@RequestBody Film film) {
         log.info("Фильм {} с id {} удалён", film.getName(), film.getId());
-        filmService.getFilmStorage().remove(film);
+        filmService.removeFilm(film);
     }
 
     @PutMapping(value = "{id}/like/{userId}")

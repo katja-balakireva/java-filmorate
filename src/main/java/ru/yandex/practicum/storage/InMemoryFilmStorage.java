@@ -85,21 +85,21 @@ public class InMemoryFilmStorage implements FilmStorage {
         int maxDescriptionLength = 200;
 
         if (film.getName().isBlank() || film.getName().isEmpty()) {
-            log.warn("Ошибка валидации названия фильма");
+            log.warn("Ошибка валидации названия фильма: {}", film);
             throw new ValidationException("Пустое название фильма");
         }
         if (film.getDescription().length() > maxDescriptionLength) {
-            log.warn("Ошибка валидации описания фильма");
+            log.warn("Ошибка валидации описания фильма: {}", film);
             throw new ValidationException(
                     String.format("Описание фильма содержит более %d символов", maxDescriptionLength));
         }
         if (film.getReleaseDate().isBefore(RELEASE_DATE)) {
-            log.warn("Ошибка валидации даты релиза фильма");
+            log.warn("Ошибка валидации даты релиза фильма: {}", film);
             throw new ValidationException(
                     String.format("Дата релиза фильма до %s", RELEASE_DATE.toString()));
         }
         if (film.getDuration() < 0) {
-            log.warn("Ошибка валидации продолжительности фильма");
+            log.warn("Ошибка валидации продолжительности фильма: {}", film);
             throw new ValidationException("Продолжительность фильма отрицательная");
         }
         return true;

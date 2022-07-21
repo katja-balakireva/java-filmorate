@@ -1,6 +1,5 @@
 package ru.yandex.practicum.service;
 
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.exceptions.NotFoundException;
@@ -12,13 +11,33 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@Getter
 public class FilmService {
-    FilmStorage filmStorage;
+    private FilmStorage filmStorage;
 
     @Autowired
     public FilmService(FilmStorage filmStorage) {
         this.filmStorage = filmStorage;
+    }
+
+
+    public Set<Film> getAllFilms() {
+        return filmStorage.getAll();
+    }
+
+    public Film getFilmById(long filmId) {
+        return filmStorage.getById(filmId);
+    }
+
+    public Film addFilm(Film film) {
+        return filmStorage.add(film);
+    }
+
+    public Film updateFilm(Film film) {
+        return filmStorage.update(film);
+    }
+
+    public void removeFilm(Film film) {
+        filmStorage.remove(film);
     }
 
     public void addLike(long filmId, long userId) {

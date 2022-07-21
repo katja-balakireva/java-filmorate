@@ -1,6 +1,5 @@
 package ru.yandex.practicum.service;
 
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.exceptions.ServerErrorException;
@@ -13,14 +12,33 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-@Getter
 public class UserService {
 
-    UserStorage userStorage;
+    private UserStorage userStorage;
 
     @Autowired
     public UserService(UserStorage userStorage) {
         this.userStorage = userStorage;
+    }
+
+    public Set<User> getAllUsers() {
+        return userStorage.getAll();
+    }
+
+    public User getUserById(long userId) {
+        return userStorage.getById(userId);
+    }
+
+    public User addUser(User user) {
+        return userStorage.add(user);
+    }
+
+    public User updateUser(User user) {
+        return userStorage.update(user);
+    }
+
+    public void removeUser(User user) {
+        userStorage.remove(user);
     }
 
     public void addFriend(long userId, long friendId) {

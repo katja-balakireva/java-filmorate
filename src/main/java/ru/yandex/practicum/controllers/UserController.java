@@ -19,7 +19,7 @@ import java.util.Set;
 @RequestMapping("/users")
 public class UserController {
 
-    UserService userService;
+    private UserService userService;
 
     @Autowired
     public UserController(UserService userService) {
@@ -28,28 +28,28 @@ public class UserController {
 
     @GetMapping
     public Set<User> getAllUsers() {
-        Set<User> userList = userService.getUserStorage().getAll();
+        Set<User> userList = userService.getAllUsers();
         log.info("Получен список из {} пользователей", userList.size());
         return userList;
     }
 
     @GetMapping(value = "{userId}")
     public User getById(@PathVariable long userId) {
-        User user = userService.getUserStorage().getById(userId);
+        User user = userService.getUserById(userId);
         log.info("Получен пользователь {} с id {}", user.getLogin(), user.getId());
         return user;
     }
 
     @PostMapping
     public User addUser(@RequestBody User user) {
-        User addedUser = userService.getUserStorage().add(user);
+        User addedUser = userService.addUser(user);
         log.info("Добавлен пользователь: {} с id: {}", addedUser.getLogin(), addedUser.getId());
         return addedUser;
     }
 
     @PutMapping
     public User updateUser(@RequestBody User user) {
-        User updatedUser = userService.getUserStorage().update(user);
+        User updatedUser = userService.updateUser(user);
         log.info("Информация о пользователе {} обновлена.", updatedUser.getLogin());
         return updatedUser;
     }
@@ -57,7 +57,7 @@ public class UserController {
     @DeleteMapping
     public void deleteUser(@RequestBody User user) {
         log.info("Пользователь {} с id {} удалён", user.getLogin(), user.getId());
-        userService.getUserStorage().remove(user);
+        userService.removeUser(user);
     }
 
     @PutMapping(value = "{id}/friends/{friendId}")
