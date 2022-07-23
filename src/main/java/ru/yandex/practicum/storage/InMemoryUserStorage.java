@@ -1,17 +1,12 @@
 package ru.yandex.practicum.storage;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.exceptions.NotFoundException;
-import ru.yandex.practicum.exceptions.ValidationException;
 import ru.yandex.practicum.model.User;
 
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
 @Component
-@Slf4j
 public class InMemoryUserStorage implements UserStorage {
 
     private static long idCounter = 0;
@@ -19,49 +14,28 @@ public class InMemoryUserStorage implements UserStorage {
 
 
     @Override
-    public User add(User user) {
-        for (User u : users) {
-            if (u.getEmail().equals(user.getEmail())) {
-                throw new ValidationException("Пользователь с таким email уже существует");
-            }
-        }
-
-        if (validateUser(user)) {
-            long newId = ++idCounter;
-            user.setId(newId);
-            users.add(user);
-        }
-        return user;
+    public User add(User userToAdd) {
+        long newId = ++idCounter;
+        userToAdd.setId(newId);
+        users.add(userToAdd);
+        return userToAdd;
     }
 
     @Override
-    public User update(User user) {
-
-        if (validateUser(user)) {
-            for (User u : users) {
-                if (u.getId() == user.getId()) {
-                    users.remove(u);
-                    users.add(user);
-                    return user;
-                }
-            }
-            throw new NotFoundException("Пользователь с таким id не найден");
-        } else {
-            throw new ValidationException("Невозможно обновить информацию о пользователе");
-        }
-    }
-
-    @Override
-    public User remove(User user) {
-
-        if (validateUser(user)) {
-            if (users.contains(user)) {
+    public User update(User userToUpdate) {
+        for (User user : users) {
+            if (user.getId() == userToUpdate.getId()) {
                 users.remove(user);
-            } else {
-                throw new NotFoundException("Такого пользователя нет в списке пользователей");
+                users.add(userToUpdate);
             }
         }
-        return user;
+        return userToUpdate;
+    }
+
+    @Override
+    public User remove(User userToRemove) {
+        users.remove(userToRemove);
+        return userToRemove;
     }
 
     @Override
@@ -71,40 +45,11 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User getById(long userId) {
-
-        for (User u : users) {
-            if (u.getId() == userId) {
-                return u;
+        for (User user : users) {
+            if (user.getId() == userId) {
+                return user;
             }
         }
-        throw new NotFoundException("Пользователь с таким id не найден");
-    }
-
-    private boolean validateUser(User user) throws ValidationException {
-
-        if (user.getName().isBlank() || user.getName().isEmpty()) {
-            user.setName(user.getLogin());
-        }
-        if (user.getEmail().isBlank() || user.getEmail().isEmpty()) {
-            log.warn("Ошибка валидации email пользователя: {}", user);
-            throw new ValidationException("Пустой email пользователя");
-        }
-        if (!user.getEmail().contains("@")) {
-            log.warn("Ошибка валидации email пользователя: {}", user);
-            throw new ValidationException("email пользователя не содержит @");
-        }
-        if (user.getLogin().isBlank() || user.getLogin().isEmpty()) {
-            log.warn("Ошибка валидации логина пользователя: {}", user);
-            throw new ValidationException("Пустой логин пользователя");
-        }
-        if (user.getLogin().contains(" ")) {
-            log.warn("Ошибка валидации логина пользователя: {}", user);
-            throw new ValidationException("Логин пользователя содержит пробелы");
-        }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            log.warn("Ошибка валидации даты рождения пользователя: {}", user);
-            throw new ValidationException("Дата рождения пользователя в будущем");
-        }
-        return true;
+        return null;
     }
 }
