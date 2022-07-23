@@ -1,79 +1,106 @@
 package ru.yandex.practicum.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+import ru.yandex.practicum.exceptions.NotFoundException;
+import ru.yandex.practicum.exceptions.ServerErrorException;
+import ru.yandex.practicum.exceptions.ValidationException;
 import ru.yandex.practicum.model.User;
+import ru.yandex.practicum.service.UserService;
 
-import java.time.LocalDate;
-import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @RestController
 @Slf4j
 @RequestMapping("/users")
 public class UserController {
-    private HashSet<User> users = new HashSet<>();
-    private static int idCounter = 0;
 
-    @GetMapping
-    public HashSet<User> getAllUsers() {
-        return users;
+    private UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
-    @PutMapping
-    public User updateUser(@RequestBody User user) throws ValidationException {
+    @GetMapping
+    public Set<User> getAllUsers() {
+        Set<User> userList = userService.getAllUsers();
+        log.info("Получен список из {} пользователей", userList.size());
+        return userList;
+    }
 
-        if (validateUser(user)) {
-            for (User u : users) {
-                if (u.getId() == user.getId()) {
-                    users.remove(u);
-                    users.add(user);
-                    log.info("Информация о пользователе {} обновлена.", user.getLogin());
-                } else {
-                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-                }
-            }
-        }
+    @GetMapping(value = "{userId}")
+    public User getById(@PathVariable long userId) {
+        User user = userService.getUserById(userId);
+        log.info("Получен пользователь {} с id {}", user.getLogin(), user.getId());
         return user;
     }
 
     @PostMapping
-    public User addUser(@RequestBody User user) throws ValidationException {
-
-        if (validateUser(user)) {
-            user.setId(++idCounter);
-            users.add(user);
-            log.info("Добавлен пользователь: {} с id: {}", user.getLogin(), user.getId());
-        }
-        return user;
+    public User addUser(@RequestBody User user) {
+        User addedUser = userService.addUser(user);
+        log.info("Добавлен пользователь: {} с id: {}", addedUser.getLogin(), addedUser.getId());
+        return addedUser;
     }
 
-    private boolean validateUser(User user) throws ValidationException {
+    @PutMapping
+    public User updateUser(@RequestBody User user) {
+        User updatedUser = userService.updateUser(user);
+        log.info("Информация о пользователе {} обновлена.", updatedUser.getLogin());
+        return updatedUser;
+    }
 
-        if (user.getName().isBlank() || user.getName().isEmpty()) {
-            user.setName(user.getLogin());
-        }
-        if (user.getEmail().isBlank() || user.getEmail().isEmpty()) {
-            log.warn("Ошибка валидации email пользователя");
-            throw new ValidationException("Пустой email пользователя");
-        }
-        if (!user.getEmail().contains("@")) {
-            log.warn("Ошибка валидации email пользователя");
-            throw new ValidationException("email пользователя не содержит @");
-        }
-        if (user.getLogin().isBlank() || user.getLogin().isEmpty()) {
-            log.warn("Ошибка валидации логина пользователя");
-            throw new ValidationException("Пустой логин пользователя");
-        }
-        if (user.getLogin().contains(" ")) {
-            log.warn("Ошибка валидации логина пользователя");
-            throw new ValidationException("Логин пользователя содержит пробелы");
-        }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            log.warn("Ошибка валидации даты рождения пользователя");
-            throw new ValidationException("Дата рождения пользователя в будущем");
-        }
-        return true;
+    @DeleteMapping
+    public void deleteUser(@RequestBody User user) {
+        log.info("Пользователь {} с id {} удалён", user.getLogin(), user.getId());
+        userService.removeUser(user);
+    }
+
+    @PutMapping(value = "{id}/friends/{friendId}")
+    public void addFriend(@PathVariable long id, @PathVariable long friendId) {
+        log.info("Пользователь c id {} добавил друга c id {}", id, friendId);
+        userService.addFriend(id, friendId);
+    }
+
+    @DeleteMapping(value = "{id}/friends/{friendId}")
+    public void deleteFriend(@PathVariable long id, @PathVariable long friendId) {
+        log.info("Пользователь c id {} удалил друга c id {}", id, friendId);
+        userService.removeFriend(id, friendId);
+    }
+
+    @GetMapping(value = "{id}/friends")
+    public List<User> getFriendsList(@PathVariable long id) {
+        List<User> friendsList = userService.getAllFriends(id);
+        log.info("Получен список друзей пользователя c id {}, {} друзей", id, friendsList.size());
+        return friendsList;
+    }
+
+    @GetMapping(value = "{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable long id, @PathVariable long otherId) {
+        List<User> commonFriendsList = userService.getCommonFriends(id, otherId);
+        log.info("Получены общие друзья пользователей {} и {}: {}", id, otherId, commonFriendsList);
+        return commonFriendsList;
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST) //code 400
+    public Map<String, String> handleValidationException(final ValidationException e) {
+        return Map.of("validation error", "Не пройдена валидация");
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND) //code 404
+    public Map<String, String> handleNotFoundException(final NotFoundException e) {
+        return Map.of("not found", "Объект не найден");
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR) //code 500
+    public Map<String, String> handleServerErrorException(final ServerErrorException e) {
+        return Map.of("error", "Ошибка на сервере");
     }
 }

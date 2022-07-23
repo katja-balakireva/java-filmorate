@@ -2,19 +2,28 @@ package ru.yandex.practicum.model;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.NonNull;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Builder
-@NonNull
 public class User {
 
-    private int id;
+    private long id;
     private String email;
     private String login;
     private String name;
     private LocalDate birthday;
+    private Set<Long> friendsId;
 
+    public void setAndCheckFriendsId(long friendsId) {
+        if (this.friendsId == null) {
+            this.friendsId = new HashSet<>();
+            this.friendsId.add(friendsId);
+        } else {
+            this.friendsId.add(friendsId);
+        }
+    }
 }
