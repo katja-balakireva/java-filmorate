@@ -2,6 +2,7 @@ package ru.yandex.practicum.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.exceptions.NotFoundException;
 import ru.yandex.practicum.exceptions.ServerErrorException;
@@ -18,11 +19,14 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FilmService {
     private static final LocalDate RELEASE_DATE = LocalDate.of(1895, Month.DECEMBER, 28);
+    @Qualifier("FilmDbStorage")
     private FilmStorage filmStorage;
+    private LikeService likeService;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage) {
+    public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage, LikeService likeService) {
         this.filmStorage = filmStorage;
+        this.likeService = likeService;
     }
 
     public Set<Film> getAllFilms() {
@@ -63,57 +67,13 @@ public class FilmService {
     public void removeFilm(Film filmToRemove) {
         if (validateFilm(filmToRemove)) {
             if (filmStorage.getAll().contains(filmToRemove)) {
+                long id = filmToRemove.getId();
+                likeService.removeAllLikes(id);
                 filmStorage.remove(filmToRemove);
             } else {
                 throw new NotFoundException("Такого фильма нет в списке фильмов");
             }
         }
-    }
-
-    public void addLike(long filmId, long userId) {
-        Film film = filmStorage.getById(filmId);
-
-        if (film != null) {
-            film.setAndCheckLikes(userId);
-        } else throw new ServerErrorException("Ошибка сервера");
-
-    }
-
-    public void removeLike(long filmId, long userId) {
-        Film film = filmStorage.getById(filmId);
-
-        if (film != null) {
-            Set<Long> filmLikes = film.getLikesId();
-            if (filmLikes != null) {
-                if (filmLikes.contains(userId)) {
-                    filmLikes.remove(userId);
-                } else {
-                    throw new NotFoundException("Лайк не найден");
-                }
-            } else {
-                throw new NotFoundException("Список лайков пуст");
-            }
-        } else throw new ServerErrorException("Ошибка сервера");
-    }
-
-    public List<Film> getPopularFilms(int count) {
-        Map<Film, Integer> newMap = new HashMap<>();
-
-        for (Film film : filmStorage.getAll()) {
-            if (film.getLikesId() != null) {
-                newMap.put(film, film.getLikesId().size());
-            } else {
-                newMap.put(film, 0);
-            }
-        }
-
-        List<Film> sorted = newMap.entrySet().stream()
-                .sorted(Map.Entry.<Film, Integer>comparingByValue().reversed())
-                .map(Map.Entry::getKey)
-                .limit(count)
-                .collect(Collectors.toList());
-
-        return sorted;
     }
 
     private boolean validateFilm(Film film) throws ValidationException {

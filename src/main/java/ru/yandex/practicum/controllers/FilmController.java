@@ -9,6 +9,7 @@ import ru.yandex.practicum.exceptions.ServerErrorException;
 import ru.yandex.practicum.exceptions.ValidationException;
 import ru.yandex.practicum.model.Film;
 import ru.yandex.practicum.service.FilmService;
+import ru.yandex.practicum.service.LikeService;
 
 import java.util.List;
 import java.util.Map;
@@ -20,11 +21,14 @@ import java.util.Set;
 public class FilmController {
 
     private FilmService filmService;
+    private LikeService likeService;
 
     @Autowired
-    public FilmController(FilmService filmService) {
+    public FilmController(FilmService filmService, LikeService likeService) {
         this.filmService = filmService;
+        this.likeService = likeService;
     }
+
 
     @GetMapping
     public Set<Film> getAllFilms() {
@@ -63,38 +67,20 @@ public class FilmController {
     @PutMapping(value = "{id}/like/{userId}")
     public void addLike(@PathVariable long id, @PathVariable long userId) {
         log.info("Пользователь c id {} поставил лайк фильму с id {}", userId, id);
-        filmService.addLike(id, userId);
+        likeService.addLike(id, userId);
     }
 
     @DeleteMapping(value = "{id}/like/{userId}")
     public void removeLike(@PathVariable long id, @PathVariable long userId) {
         log.info("Пользователь c id {} удалил лайк у фильма {}", userId, id);
-        filmService.removeLike(id, userId);
+        likeService.removeLike(id, userId);
     }
 
     @GetMapping(value = "/popular")
     public List<Film> getPopularFilms(@RequestParam(value = "count", defaultValue = "10",
             required = false) int count) {
-        List<Film> popularFilms = filmService.getPopularFilms(count);
+        List<Film> popularFilms = likeService.getPopularFilms(count);
         log.info("Получен список {} самых популярных фильмов: {} ", popularFilms.size(), popularFilms);
         return popularFilms;
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST) //code 400
-    public Map<String, String> handleValidationException(final ValidationException e) {
-        return Map.of("validation error", "Не пройдена валидация");
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND) //code 404
-    public Map<String, String> handleNotFoundException(final NotFoundException e) {
-        return Map.of("not found", "Объект не найден");
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR) //code 500
-    public Map<String, String> handleServerErrorException(final ServerErrorException e) {
-        return Map.of("error", "Ошибка на сервере");
     }
 }

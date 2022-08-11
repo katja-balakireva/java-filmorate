@@ -85,22 +85,4 @@ public class UserController {
         log.info("Получены общие друзья пользователей {} и {}: {}", id, otherId, commonFriendsList);
         return commonFriendsList;
     }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST) //code 400
-    public Map<String, String> handleValidationException(final ValidationException e) {
-        return Map.of("validation error", "Не пройдена валидация");
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND) //code 404
-    public Map<String, String> handleNotFoundException(final NotFoundException e) {
-        return Map.of("not found", "Объект не найден");
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR) //code 500
-    public Map<String, String> handleServerErrorException(final ServerErrorException e) {
-        return Map.of("error", "Ошибка на сервере");
-    }
 }

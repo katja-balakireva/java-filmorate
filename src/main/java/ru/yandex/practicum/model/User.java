@@ -1,13 +1,16 @@
 package ru.yandex.practicum.model;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@EqualsAndHashCode(of = "id")
 @Builder
 public class User {
 
@@ -16,14 +19,14 @@ public class User {
     private String login;
     private String name;
     private LocalDate birthday;
-    private Set<Long> friendsId;
+   // private Set<Long> friendsId; //!!!
 
-    public void setAndCheckFriendsId(long friendsId) {
-        if (this.friendsId == null) {
-            this.friendsId = new HashSet<>();
-            this.friendsId.add(friendsId);
-        } else {
-            this.friendsId.add(friendsId);
-        }
-    }
+//    public void setAndCheckFriendsId(long friendsId) {
+//        if (this.friendsId == null) {
+//            this.friendsId = new HashSet<>();
+//            this.friendsId.add(friendsId);
+//        } else {
+//            this.friendsId.add(friendsId);
+//        }
+//    }
 }

@@ -2,11 +2,14 @@ package ru.yandex.practicum.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.exceptions.NotFoundException;
 import ru.yandex.practicum.exceptions.ServerErrorException;
 import ru.yandex.practicum.exceptions.ValidationException;
 import ru.yandex.practicum.model.User;
+import ru.yandex.practicum.storage.FriendStorage;
 import ru.yandex.practicum.storage.UserStorage;
 
 import java.time.LocalDate;
@@ -19,11 +22,15 @@ import java.util.Set;
 @Slf4j
 public class UserService {
 
+    @Qualifier("UserDbStorage")
     private UserStorage userStorage;
+    @Qualifier("FriendDbStorage")
+    private FriendStorage friendStorage;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage,  @Qualifier("FriendDbStorage") FriendStorage friendStorage) {
         this.userStorage = userStorage;
+        this.friendStorage = friendStorage;
     }
 
     public Set<User> getAllUsers() {
@@ -31,6 +38,7 @@ public class UserService {
     }
 
     public User getUserById(long userId) {
+
         if (userStorage.getById(userId) != null) {
             return userStorage.getById(userId);
         } else throw new NotFoundException("Пользователь с таким id не найден");
@@ -71,62 +79,26 @@ public class UserService {
         }
     }
 
+    //friends
+
     public void addFriend(long userId, long friendId) {
-        User user = userStorage.getById(userId);
-        User friend = userStorage.getById(friendId);
-
-        if (user != null && friend != null) {
-            user.setAndCheckFriendsId(friendId);
-            friend.setAndCheckFriendsId(userId);
-
-        } else throw new NotFoundException("Пользователь не найден");
+        friendStorage.addFriend(userId,friendId);
     }
 
     public void removeFriend(long userId, long friendId) {
-        User user = userStorage.getById(userId);
-        User friend = userStorage.getById(friendId);
-
-        if (user != null && friend != null) {
-            Set<Long> usersFriends = user.getFriendsId();
-            Set<Long> friendsFriends = friend.getFriendsId();
-            usersFriends.remove(friendId);
-            friendsFriends.remove(userId);
-        } else throw new ServerErrorException("Ошибка сервера");
+        friendStorage.removeFriend(userId, friendId);
     }
 
     public List<User> getAllFriends(long userId) {
-        User user = userStorage.getById(userId);
-        List<User> friendsList = new ArrayList<>();
-        Set<Long> userFriendsIdList = user.getFriendsId();
-
-        if (userFriendsIdList != null) {
-            for (Long id : user.getFriendsId()) {
-                User friend = userStorage.getById(id);
-                friendsList.add(friend);
-            }
-        }
-        return friendsList;
+        return friendStorage.getAllFriends(userId);
     }
 
     public List<User> getCommonFriends(long userId, long otherId) {
-        Set<Long> userFriendsIdList = userStorage.getById(userId).getFriendsId();
-        Set<Long> otherFriendsIdList = userStorage.getById(otherId).getFriendsId();
-        List<User> commonFriendsList = new ArrayList<>();
-
-        if (userFriendsIdList != null && otherFriendsIdList != null) {
-            Set<Long> commonFriendsIdList = new HashSet<>(userFriendsIdList);
-            commonFriendsIdList.retainAll(otherFriendsIdList);
-
-            for (Long id : commonFriendsIdList) {
-                User user = userStorage.getById(id);
-                commonFriendsList.add(user);
-            }
-        }
-        return commonFriendsList;
+       return friendStorage.getCommonFriends(userId,otherId);
     }
 
     private boolean validateUser(User user) throws ValidationException {
-        if (user.getName().isBlank() || user.getName().isEmpty()) {
+        if (user.getName().isBlank() || user.getName().isEmpty() || user.getName() == null) {
             user.setName(user.getLogin());
         }
         if (user.getEmail().isBlank() || user.getEmail().isEmpty()) {
