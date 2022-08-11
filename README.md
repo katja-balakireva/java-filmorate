@@ -4,7 +4,7 @@
 
 https://app.quickdatabasediagrams.com/#/d/gwIYvU
 
-![filmorate-diagram](https://user-images.githubusercontent.com/97680873/181720810-a85de567-26d5-4d92-9bd7-45bc223af7ac.png)
+![2022-08-11_12-45-29](https://user-images.githubusercontent.com/97680873/184107275-04cb4f31-9d30-4336-b329-4432cd9d3f94.png)
 
 **Sample tables: films, users, genres**
 
