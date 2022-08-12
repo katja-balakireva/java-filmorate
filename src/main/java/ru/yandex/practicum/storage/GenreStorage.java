@@ -12,12 +12,6 @@ public interface GenreStorage {
 
     Set<Genre> loadFilmGenres(long filmId);
 
-    Genre add(Genre genre);
-
-    Genre update(Genre genre);
-
-    Genre remove(Genre genre);
-
     Set<Genre> getAll();
 
     Genre getById(long genreId);

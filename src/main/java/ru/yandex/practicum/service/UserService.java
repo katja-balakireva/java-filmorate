@@ -98,7 +98,7 @@ public class UserService {
     }
 
     private boolean validateUser(User user) throws ValidationException {
-        if (user.getName().isBlank() || user.getName().isEmpty() || user.getName() == null) {
+        if (user.getName() == null || user.getName().isBlank() || user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
         if (user.getEmail().isBlank() || user.getEmail().isEmpty()) {

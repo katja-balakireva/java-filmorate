@@ -36,11 +36,14 @@ public class LikeService {
         this.userStorage = userStorage;
     }
 
-    public void addLike(long likeId, long filmId) {
+    public void addLike(long filmId, long likeId) {
 
+        if (!validateLikes(filmId, likeId)) {
+            return;
+        }
         if (filmStorage.getById(filmId) != null) {
             if (userStorage.getById(likeId) != null) {
-                likeStorage.addLike(likeId, filmId);
+                likeStorage.addLike(filmId,likeId);
             } else {
                 throw new NotFoundException("Пользователь не найден");
             }
@@ -51,31 +54,22 @@ public class LikeService {
 
     public void removeLike(long likeId, long filmId) {
 
+        if (!validateLikes(likeId, filmId)) {
+            return;
+        }
+
         if (userStorage.getById(likeId) == null) {
             throw new NotFoundException("Пользователь не найден");
         }
         if (filmStorage.getById(filmId) != null) {
-
-            if (!likeStorage.likesListByFilm(filmId).isEmpty()) {
-                if (likeStorage.likesListByFilm(filmId).contains(likeId)) {
-                    likeStorage.removeLike(likeId,filmId);
-                } else {
-                    throw new NotFoundException("Лайк не найден");
-                }
-            } else {
-                throw new NotFoundException("Список лайков пуст");
-            }
+            likeStorage.removeLike(likeId,filmId);
         } else throw new ServerErrorException("Ошибка сервера");
     }
 
     public void removeAllLikes(long filmId) {
 
         if (filmStorage.getById(filmId) != null) {
-            if (!likeStorage.likesListByFilm(filmId).isEmpty()) {
-                likeStorage.removeAllLikes(filmId);
-            } else {
-                throw new NotFoundException("Список лайков пуст");
-            }
+            likeStorage.removeAllLikes(filmId);
         } else {
             throw new ServerErrorException("Ошибка сервера");
         }
@@ -87,5 +81,21 @@ public class LikeService {
 
     public List<Film> getPopularFilms(int count) {
         return likeStorage.getPopularFilms(count);
+    }
+
+    public boolean validateLikes(long filmId, long likeId) {
+        if (likeStorage.likesListByFilm(filmId).isEmpty()) {
+            log.warn("Список лайков фильма с id {} пуст", filmId);
+            throw new NotFoundException("Список лайков фильма пуст");
+        }
+        if (!likeStorage.likesListByFilm(filmId).contains(likeId)) {
+            log.warn("Фильм с id {} не содержит лайк с id {}", filmId, likeId);
+            throw new NotFoundException("Лайк не найден");
+        }
+        if (likeId < 0) {
+            log.warn("id лайка не может быть отрицательным: {}", likeId);
+            throw new NotFoundException("Лайк не существует");
+        }
+        return true;
     }
 }

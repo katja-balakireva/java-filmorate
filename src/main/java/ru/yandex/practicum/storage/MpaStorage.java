@@ -15,4 +15,6 @@ public interface MpaStorage {
     List<Mpa> getAll();
 
     Mpa getById(long ratingId);
+
+    Mpa loadFilmMpa(long filmId);
 }

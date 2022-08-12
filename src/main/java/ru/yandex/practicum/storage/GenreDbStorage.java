@@ -36,57 +36,23 @@ public class GenreDbStorage implements GenreStorage{
         String sqlInsertQuery = "insert into films_genres (GENRE_ID, FILM_ID) " +
                 "values (?, ?)";
 
-        if (getAll() != null || !getAll().isEmpty()) {
-            for (Genre genre: getAll()) {
+        if (film.getGenres() != null) {
+            for (Genre genre: film.getGenres()) {
                 jdbcTemplate.update(sqlInsertQuery, genre.getId(),film.getId());
             }
+        } else {
+            film.setGenres(null);
         }
     }
 
     @Override
     public Set<Genre> loadFilmGenres(long filmId) {
-        String sqlQuery = "select ID, NAME from genres as g " +
-                "join films_genres as fg on g.ID = fg.GENRE_ID " +
-                "where FILM_ID = ?";
+        String sqlQuery = "select g.ID, g.NAME from films_genres as fg " +
+                "join genres as g on g.ID = fg.GENRE_ID " +
+                "where fg.FILM_ID = ?";
 
         Set<Genre> filmGenres = new HashSet<>(jdbcTemplate.query(sqlQuery, this::mapRowToGenre, filmId));
         return filmGenres;
-    }
-
-    @Override
-    public Genre add(Genre genre) {
-
-        String sqlQuery = "insert into genres(NAME) " +
-                "values (?)";
-
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"id"});
-            stmt.setString(1, genre.getName());
-            return stmt;
-        }, keyHolder);
-
-        long genreId = keyHolder.getKey().longValue();
-        return getById(genreId);
-    }
-
-    @Override
-    public Genre update(Genre genre) {
-
-        String sqlQuery = "update genres set " +
-                "NAME = ? " +  "where ID = ?";
-        jdbcTemplate.update(sqlQuery
-                , genre.getName()
-                , genre.getId());
-        return genre;
-    }
-
-    @Override
-    public Genre remove(Genre genre) {
-
-        String sqlQuery = "delete from genres where ID = ?";
-        jdbcTemplate.update(sqlQuery, genre.getId());
-        return genre;
     }
 
     @Override

@@ -1,10 +1,12 @@
 package ru.yandex.practicum.storage;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.model.Film;
+import ru.yandex.practicum.model.User;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,18 +18,28 @@ import java.util.stream.Collectors;
 public class LikeDbStorage implements LikeStorage{
 
     private final JdbcTemplate jdbcTemplate;
+    @Qualifier("UserDbStorage")
+    private UserStorage userStorage;
+    @Qualifier("FilmDbStorage")
+    private FilmStorage filmStorage;
 
-    @Autowired
-    public LikeDbStorage(JdbcTemplate jdbcTemplate) {
+    public LikeDbStorage(JdbcTemplate jdbcTemplate,
+                         @Qualifier("UserDbStorage") UserStorage userStorage,
+                         @Qualifier("FilmDbStorage")FilmStorage filmStorage) {
         this.jdbcTemplate = jdbcTemplate;
+        this.userStorage = userStorage;
+        this.filmStorage = filmStorage;
     }
 
     @Override
-    public void addLike(long likeId, long filmId) {
-        String sqlQuery = "insert into likes(LIKE_ID, FILM_ID) " +
+    public void addLike(long filmId, long likeId) {
+
+        User user = userStorage.getById(likeId);
+        Film film = filmStorage.getById(filmId);
+        String sqlQuery = "insert into likes (LIKE_ID, FILM_ID) " +
                 "values (?,?)";
 
-        jdbcTemplate.update(sqlQuery,likeId,filmId);
+        jdbcTemplate.update(sqlQuery,user.getId(),film.getId());
     }
 
     @Override
@@ -66,6 +78,8 @@ public class LikeDbStorage implements LikeStorage{
                 resultSet.getString("description"),
                 resultSet.getDate("release_date").toLocalDate(),
                 resultSet.getInt("duration")), count);
+
+        System.out.println("КОЛИЧЕСТВО ПОП ФИЛЬМОВ: " + popularFilms.size());
         return popularFilms;
     }
 
@@ -74,7 +88,14 @@ public class LikeDbStorage implements LikeStorage{
         String sqlQuery = "select LIKE_ID from likes " +
                 " where FILM_ID = ?";
 
-        List<Long> allLikesByFilm = jdbcTemplate.queryForList(sqlQuery, Long.class);
+
+//        String sqlQuery = "select LIKE_ID from likes as l join users as u on " +
+//                "l.LIKE_ID = u.ID join films as f on l.LIKE_ID = f.ID " +
+//                "where f.ID = ?";
+
+        List<Long> allLikesByFilm = jdbcTemplate.queryForList(sqlQuery, Long.class, filmId);
+        System.out.println("********* список лайков *************" + allLikesByFilm);
+        System.out.println("********* размер списка *************" + allLikesByFilm.size());
         return new HashSet<>(allLikesByFilm);
     }
 }

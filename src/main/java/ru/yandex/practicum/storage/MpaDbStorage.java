@@ -6,6 +6,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.model.Film;
+import ru.yandex.practicum.model.Genre;
 import ru.yandex.practicum.model.Mpa;
 
 import java.sql.PreparedStatement;
@@ -72,6 +74,7 @@ public class MpaDbStorage implements MpaStorage{
         return sortedRatings;
     }
 
+
     @Override
     public Mpa getById(long ratingId) {
 
@@ -81,6 +84,34 @@ public class MpaDbStorage implements MpaStorage{
             return allRatings.get(0);
         } else return null;
 }
+
+    @Override
+    public Mpa loadFilmMpa(long filmId) {
+        String sqlQuery = "select r.ID, r.NAME from ratings as r " +
+                "join films as f on r.ID = f.RATING_ID " +
+                "where f.ID = ?";
+
+        final List<Mpa> allRatings = jdbcTemplate.query(sqlQuery, this::mapRowToMpa, filmId);
+        if (allRatings.size() != 0) {
+            return allRatings.get(0);
+        } else return null;
+    }
+
+//    @Override
+//    public void setFilmMpa(Film film) {
+//        String sqlDeleteQuery =
+//                "delete RATING_MPA from films " +
+//                        "where ID = ?";
+//        jdbcTemplate.update(sqlDeleteQuery, film.getId());
+//        String sqlInsertQuery = "insert into films_genres (GENRE_ID, FILM_ID) " +
+//                "values (?, ?)";
+//
+//        if (getAll() != null || !getAll().isEmpty()) {
+//            for (Genre genre: getAll()) {
+//                jdbcTemplate.update(sqlInsertQuery, genre.getId(),film.getId());
+//            }
+//        }
+//    }
 
     private Mpa mapRowToMpa(ResultSet resultSet, int rowNum) throws SQLException {
         return Mpa.builder()
