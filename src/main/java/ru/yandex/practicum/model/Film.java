@@ -3,7 +3,6 @@ package ru.yandex.practicum.model;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.Optional;
 import java.util.Set;
 
 @Getter

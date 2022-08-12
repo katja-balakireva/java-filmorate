@@ -7,7 +7,7 @@ import java.util.Set;
 
 public interface LikeStorage {
 
-    void addLike(long likeId, long filmId);
+    List<Long> addLike(long likeId, long filmId);
     void removeLike(long likeId, long filmId);
     int likesCountByFilm(long filmId);
     Set<Long> likesListByFilm(long filmId);

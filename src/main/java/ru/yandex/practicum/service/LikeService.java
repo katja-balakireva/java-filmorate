@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.exceptions.NotFoundException;
 import ru.yandex.practicum.exceptions.ServerErrorException;
+import ru.yandex.practicum.exceptions.ValidationException;
 import ru.yandex.practicum.model.Film;
 import ru.yandex.practicum.storage.FilmStorage;
 import ru.yandex.practicum.storage.LikeStorage;
@@ -36,14 +37,14 @@ public class LikeService {
         this.userStorage = userStorage;
     }
 
-    public void addLike(long filmId, long likeId) {
+    public List<Long> addLike(long filmId, long likeId) {
 
         if (!validateLikes(filmId, likeId)) {
-            return;
+            throw new ValidationException("Не пройдена валидация");
         }
         if (filmStorage.getById(filmId) != null) {
             if (userStorage.getById(likeId) != null) {
-                likeStorage.addLike(filmId,likeId);
+                return likeStorage.addLike(filmId,likeId);
             } else {
                 throw new NotFoundException("Пользователь не найден");
             }

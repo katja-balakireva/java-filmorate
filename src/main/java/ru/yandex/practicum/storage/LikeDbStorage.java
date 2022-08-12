@@ -32,14 +32,17 @@ public class LikeDbStorage implements LikeStorage{
     }
 
     @Override
-    public void addLike(long filmId, long likeId) {
+    public List<Long> addLike(long filmId, long likeId) {
 
         User user = userStorage.getById(likeId);
         Film film = filmStorage.getById(filmId);
+
         String sqlQuery = "insert into likes (LIKE_ID, FILM_ID) " +
                 "values (?,?)";
 
-        jdbcTemplate.update(sqlQuery,user.getId(),film.getId());
+       List<Long> likes =  new ArrayList<>(jdbcTemplate.update(sqlQuery, user.getId(), film.getId(), Long.class));
+        return likes;
+
     }
 
     @Override
@@ -67,7 +70,7 @@ public class LikeDbStorage implements LikeStorage{
 
     @Override
     public List<Film> getPopularFilms(int count) {
-        String sqlQuery = "select ID, NAME, DESCRIPTION, RELEASE_DATE, DURATION, " +
+        String sqlQuery = "select f.ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, " +
                 "count(l.LIKE_ID) from films as f " +
                 "join likes as l on l.FILM_ID = f.ID " +
                 "group by f.ID order by count(l.LIKE_ID) desc limit ?";
@@ -79,8 +82,15 @@ public class LikeDbStorage implements LikeStorage{
                 resultSet.getDate("release_date").toLocalDate(),
                 resultSet.getInt("duration")), count);
 
-        System.out.println("КОЛИЧЕСТВО ПОП ФИЛЬМОВ: " + popularFilms.size());
-        return popularFilms;
+
+        String sqlNewQuery = "select * from films desc";
+        List<Film> unpopularFilms = jdbcTemplate.query(sqlNewQuery, filmStorage::mapRowToFilm);
+
+        if (popularFilms.size() == 0) {
+            return Collections.singletonList(unpopularFilms.get(0));
+        } else {
+            return popularFilms;
+        }
     }
 
     @Override

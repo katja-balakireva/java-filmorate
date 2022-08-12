@@ -12,7 +12,4 @@ public class Mpa {
     private long id;
     private String name;
 
-    public Mpa(long id) {
-        this.id = id;
-    }
 }

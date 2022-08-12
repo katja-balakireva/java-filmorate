@@ -2,6 +2,8 @@ package ru.yandex.practicum.storage;
 
 import ru.yandex.practicum.model.Film;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Set;
 
 public interface FilmStorage {
@@ -16,4 +18,5 @@ public interface FilmStorage {
 
     Film getById(long filmId);
 
+    Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException;
 }

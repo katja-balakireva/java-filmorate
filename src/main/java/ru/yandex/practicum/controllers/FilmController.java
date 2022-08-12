@@ -29,7 +29,6 @@ public class FilmController {
         this.likeService = likeService;
     }
 
-
     @GetMapping
     public Set<Film> getAllFilms() {
         Set<Film> filmList = filmService.getAllFilms();
@@ -65,9 +64,9 @@ public class FilmController {
     }
 
     @PutMapping(value = "{id}/like/{userId}")
-    public void addLike(@PathVariable long id, @PathVariable long userId) {
+    public List<Long> addLike(@PathVariable long id, @PathVariable long userId) {
         log.info("Пользователь c id {} поставил лайк фильму с id {}", userId, id);
-        likeService.addLike(id, userId);
+        return likeService.addLike(id, userId);
     }
 
     @DeleteMapping(value = "{id}/like/{userId}")

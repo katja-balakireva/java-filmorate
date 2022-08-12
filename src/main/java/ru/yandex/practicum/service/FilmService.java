@@ -79,6 +79,11 @@ public class FilmService {
     private boolean validateFilm(Film film) throws ValidationException {
         int maxDescriptionLength = 200;
 
+        if (film.getMpa() == null) {
+            log.warn("Ошибка валидации MPA фильма: {}", film);
+            throw new ValidationException("Передан пустой Mpa");
+        }
+
         if (film.getName().isBlank() || film.getName().isEmpty()) {
             log.warn("Ошибка валидации названия фильма: {}", film);
             throw new ValidationException("Пустое название фильма");
