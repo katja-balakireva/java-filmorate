@@ -64,9 +64,10 @@ public class FilmController {
     }
 
     @PutMapping(value = "{id}/like/{userId}")
-    public List<Long> addLike(@PathVariable long id, @PathVariable long userId) {
+    public void addLike(@PathVariable long id, @PathVariable long userId) {
+        System.out.println("ADD LIKE FROM CONTROLLER IS CALLED!!!!");
         log.info("Пользователь c id {} поставил лайк фильму с id {}", userId, id);
-        return likeService.addLike(id, userId);
+        likeService.addLike(id, userId);
     }
 
     @DeleteMapping(value = "{id}/like/{userId}")

@@ -1,6 +1,5 @@
 package ru.yandex.practicum.storage;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -8,8 +7,6 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.model.Film;
 import ru.yandex.practicum.model.User;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,16 +29,17 @@ public class LikeDbStorage implements LikeStorage{
     }
 
     @Override
-    public List<Long> addLike(long filmId, long likeId) {
+    public void addLike(long filmId, long likeId) {
+
+        System.out.println("ADD LIKE FROM STORAGE IS CALLED!!!!");
 
         User user = userStorage.getById(likeId);
         Film film = filmStorage.getById(filmId);
 
-        String sqlQuery = "insert into likes (LIKE_ID, FILM_ID) " +
+        String sqlQuery = "merge into LIKES " +
                 "values (?,?)";
 
-       List<Long> likes =  new ArrayList<>(jdbcTemplate.update(sqlQuery, user.getId(), film.getId(), Long.class));
-        return likes;
+       jdbcTemplate.update(sqlQuery, user.getId(), film.getId());
 
     }
 

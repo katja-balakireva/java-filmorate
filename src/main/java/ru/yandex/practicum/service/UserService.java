@@ -10,6 +10,7 @@ import ru.yandex.practicum.exceptions.ServerErrorException;
 import ru.yandex.practicum.exceptions.ValidationException;
 import ru.yandex.practicum.model.User;
 import ru.yandex.practicum.storage.FriendStorage;
+import ru.yandex.practicum.storage.LikeStorage;
 import ru.yandex.practicum.storage.UserStorage;
 
 import java.time.LocalDate;
@@ -28,7 +29,8 @@ public class UserService {
     private FriendStorage friendStorage;
 
     @Autowired
-    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage,  @Qualifier("FriendDbStorage") FriendStorage friendStorage) {
+    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage,
+                       @Qualifier("FriendDbStorage") FriendStorage friendStorage) {
         this.userStorage = userStorage;
         this.friendStorage = friendStorage;
     }

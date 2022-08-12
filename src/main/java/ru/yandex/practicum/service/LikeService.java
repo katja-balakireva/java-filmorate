@@ -29,7 +29,7 @@ public class LikeService {
     private UserStorage userStorage;
 
     @Autowired
-    public LikeService( @Qualifier("LikeDbStorage")LikeStorage likeStorage,
+    public LikeService( @Qualifier("LikeDbStorage") LikeStorage likeStorage,
                         @Qualifier("FilmDbStorage") FilmStorage filmStorage,
                         @Qualifier("UserDbStorage") UserStorage userStorage) {
         this.likeStorage = likeStorage;
@@ -37,14 +37,16 @@ public class LikeService {
         this.userStorage = userStorage;
     }
 
-    public List<Long> addLike(long filmId, long likeId) {
+    public void addLike(long filmId, long likeId) {
+
+        System.out.println("ADD LIKE FROM SERVICE IS CALLED!!!!");
 
         if (!validateLikes(filmId, likeId)) {
             throw new ValidationException("Не пройдена валидация");
         }
         if (filmStorage.getById(filmId) != null) {
             if (userStorage.getById(likeId) != null) {
-                return likeStorage.addLike(filmId,likeId);
+                likeStorage.addLike(filmId, likeId);
             } else {
                 throw new NotFoundException("Пользователь не найден");
             }
