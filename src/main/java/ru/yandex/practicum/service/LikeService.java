@@ -41,18 +41,18 @@ public class LikeService {
 
         System.out.println("ADD LIKE FROM SERVICE IS CALLED!!!!");
 
-        if (!validateLikes(filmId, likeId)) {
-            throw new ValidationException("Не пройдена валидация");
-        }
-        if (filmStorage.getById(filmId) != null) {
-            if (userStorage.getById(likeId) != null) {
+      //  if (!validateLikes(filmId, likeId)) {
+       //     throw new ValidationException("Не пройдена валидация");
+       // }
+      //  if (filmStorage.getById(filmId) != null) {
+        //    if (userStorage.getById(likeId) != null) {
                 likeStorage.addLike(filmId, likeId);
-            } else {
-                throw new NotFoundException("Пользователь не найден");
-            }
-        } else {
-            throw new ServerErrorException("Ошибка сервера");
-        }
+          //  } else {
+            //    throw new NotFoundException("Пользователь не найден");
+            //}
+        //} else {
+          //  throw new ServerErrorException("Ошибка сервера");
+        //}
     }
 
     public void removeLike(long likeId, long filmId) {
@@ -60,13 +60,13 @@ public class LikeService {
         if (!validateLikes(likeId, filmId)) {
             return;
         }
-
-        if (userStorage.getById(likeId) == null) {
-            throw new NotFoundException("Пользователь не найден");
-        }
-        if (filmStorage.getById(filmId) != null) {
+//
+//        if (userStorage.getById(likeId) == null) {
+//            throw new NotFoundException("Пользователь не найден");
+//        }
+//        if (filmStorage.getById(filmId) != null) {
             likeStorage.removeLike(likeId,filmId);
-        } else throw new ServerErrorException("Ошибка сервера");
+//        } else throw new ServerErrorException("Ошибка сервера");
     }
 
     public void removeAllLikes(long filmId) {

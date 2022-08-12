@@ -19,13 +19,21 @@ public class LikeDbStorage implements LikeStorage{
     private UserStorage userStorage;
     @Qualifier("FilmDbStorage")
     private FilmStorage filmStorage;
+    @Qualifier("MpaDbStorage")
+    private MpaStorage mpaStorage;
+    @Qualifier("GenreDbStorage")
+    private GenreStorage genreStorage;
 
     public LikeDbStorage(JdbcTemplate jdbcTemplate,
                          @Qualifier("UserDbStorage") UserStorage userStorage,
-                         @Qualifier("FilmDbStorage")FilmStorage filmStorage) {
+                         @Qualifier("FilmDbStorage") FilmStorage filmStorage,
+                         @Qualifier("MpaDbStorage") MpaStorage mpaStorage,
+                         @Qualifier("GenreDbStorage") GenreStorage genreStorage) {
         this.jdbcTemplate = jdbcTemplate;
         this.userStorage = userStorage;
         this.filmStorage = filmStorage;
+        this.mpaStorage = mpaStorage;
+        this.genreStorage = genreStorage;
     }
 
     @Override
@@ -47,14 +55,14 @@ public class LikeDbStorage implements LikeStorage{
     public void removeLike(long likeId, long filmId) {
         String sqlQuery = "delete from likes " +
                 "where LIKE_ID = ? and FILM_ID = ?";
-        jdbcTemplate.update(sqlQuery,likeId,filmId);
+        jdbcTemplate.update(sqlQuery, likeId, filmId);
     }
 
     @Override
     public void removeAllLikes(long filmId) {
         String sqlQuery = "delete from likes " +
                 "where FILM_ID = ?";
-        jdbcTemplate.update(sqlQuery,filmId);
+        jdbcTemplate.update(sqlQuery, filmId);
     }
 
     @Override
@@ -78,8 +86,10 @@ public class LikeDbStorage implements LikeStorage{
                 resultSet.getString("name"),
                 resultSet.getString("description"),
                 resultSet.getDate("release_date").toLocalDate(),
-                resultSet.getInt("duration")), count);
-
+                resultSet.getInt("duration"),
+                mpaStorage.loadFilmMpa(resultSet.getLong("id")),
+                genreStorage.loadFilmGenres(resultSet.getLong("id"))),
+                count);
 
         String sqlNewQuery = "select * from films desc";
         List<Film> unpopularFilms = jdbcTemplate.query(sqlNewQuery, filmStorage::mapRowToFilm);
