@@ -1,24 +1,24 @@
 package ru.yandex.practicum.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.exceptions.NotFoundException;
 import ru.yandex.practicum.model.Genre;
-import ru.yandex.practicum.model.Mpa;
 import ru.yandex.practicum.storage.GenreStorage;
-import ru.yandex.practicum.storage.MpaStorage;
 
-import java.util.List;
 import java.util.Set;
 
 @Service
 @Slf4j
 public class GenreService {
+
     @Qualifier("GenreDbStorage")
     private GenreStorage genreStorage;
 
-    public GenreService(@Qualifier("GenreDbStorage")GenreStorage genreStorage) {
+    @Autowired
+    public GenreService(@Qualifier("GenreDbStorage") GenreStorage genreStorage) {
         this.genreStorage = genreStorage;
     }
 

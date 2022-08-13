@@ -3,19 +3,14 @@ package ru.yandex.practicum.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.exceptions.NotFoundException;
-import ru.yandex.practicum.exceptions.ServerErrorException;
 import ru.yandex.practicum.exceptions.ValidationException;
 import ru.yandex.practicum.model.User;
 import ru.yandex.practicum.storage.FriendStorage;
-import ru.yandex.practicum.storage.LikeStorage;
 import ru.yandex.practicum.storage.UserStorage;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -41,24 +36,20 @@ public class UserService {
 
     public User getUserById(long userId) {
 
-        if (userStorage.getById(userId) != null) {
-            return userStorage.getById(userId);
-        } else throw new NotFoundException("Пользователь с таким id не найден");
+        if (!validateUserId(userId)) {
+            return null;
+        } else return userStorage.getById(userId);
     }
 
     public User addUser(User userToAdd) {
-        for (User user : userStorage.getAll()) {
-            if (user.getEmail().equals(userToAdd.getEmail())) {
-                throw new ValidationException("Пользователь с таким email уже существует");
-            }
-        }
+
         if (validateUser(userToAdd)) {
             return userStorage.add(userToAdd);
-        }
-        return userToAdd;
+        } else return userToAdd;
     }
 
     public User updateUser(User userToUpdate) {
+
         if (validateUser(userToUpdate)) {
             for (User user : userStorage.getAll()) {
                 if (user.getId() == userToUpdate.getId()) {
@@ -72,34 +63,58 @@ public class UserService {
     }
 
     public void removeUser(User userToRemove) {
-        if (validateUser(userToRemove)) {
-            if (userStorage.getAll().contains(userToRemove)) {
-                userStorage.getAll().remove(userToRemove);
-            } else {
-                throw new NotFoundException("Такого пользователя нет в списке пользователей");
-            }
+
+        if (!validateUser(userToRemove)) {
+            return;
         }
+        userStorage.getAll().remove(userToRemove);
     }
 
-    //friends
-
     public void addFriend(long userId, long friendId) {
-        friendStorage.addFriend(userId,friendId);
+
+        if (!validateUserId(userId) || !validateUserId(friendId)) {
+            return;
+        }
+        friendStorage.addFriend(userId, friendId);
     }
 
     public void removeFriend(long userId, long friendId) {
+
+        if (!validateUserId(userId) || !validateUserId(friendId)) {
+            return;
+        }
         friendStorage.removeFriend(userId, friendId);
     }
 
     public List<User> getAllFriends(long userId) {
-        return friendStorage.getAllFriends(userId);
+
+        if (!validateUserId(userId)) {
+            return null;
+        } else return friendStorage.getAllFriends(userId);
     }
 
     public List<User> getCommonFriends(long userId, long otherId) {
-       return friendStorage.getCommonFriends(userId,otherId);
+
+        if (!validateUserId(userId) || !validateUserId(otherId)) {
+            return null;
+        } else return friendStorage.getCommonFriends(userId, otherId);
+    }
+
+    private boolean validateUserId(long userId) {
+
+        if (userId < 0) {
+            log.warn("Пользователь с id {} не найден", userId);
+            throw new NotFoundException("id пользователя не может быть отрицательным");
+        }
+        if (!userStorage.getAll().contains(userStorage.getById(userId))) {
+            log.warn("Пользователь с id {} не найден в списке", userId);
+            throw new NotFoundException("Такого пользователя нет в списке пользователей");
+        }
+        return true;
     }
 
     private boolean validateUser(User user) throws ValidationException {
+
         if (user.getName() == null || user.getName().isBlank() || user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }

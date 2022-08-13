@@ -5,12 +5,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.model.Film;
 import ru.yandex.practicum.model.User;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.*;
 
 @Repository
@@ -26,6 +24,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User add(User user) {
+
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("users")
                 .usingGeneratedKeyColumns("id");
@@ -59,6 +58,13 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
+    public void removeAll() {
+
+        String sqlQuery = "delete from users";
+        jdbcTemplate.update(sqlQuery);
+    }
+
+    @Override
     public Set<User> getAll() {
 
         String sqlQuery = "select * from users";
@@ -76,19 +82,9 @@ public class UserDbStorage implements UserStorage {
         } else return null;
     }
 
-
-    //mappers
-    private Map<String, Object> toMap(User user) {
-        Map<String, Object> values = new HashMap<>();
-        values.put("name",user.getName());
-        values.put("email",user.getEmail());
-        values.put("login",user.getLogin());
-        values.put("birthday",user.getBirthday());
-        return values;
-    }
-
     @Override
     public User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
+
         return User.builder()
                 .id(resultSet.getLong("id"))
                 .name(resultSet.getString("name"))
@@ -96,5 +92,15 @@ public class UserDbStorage implements UserStorage {
                 .login(resultSet.getString("login"))
                 .birthday(resultSet.getDate("birthday").toLocalDate())
                 .build();
+    }
+
+    private Map<String, Object> toMap(User user) {
+
+        Map<String, Object> values = new HashMap<>();
+        values.put("name", user.getName());
+        values.put("email", user.getEmail());
+        values.put("login", user.getLogin());
+        values.put("birthday", user.getBirthday());
+        return values;
     }
 }

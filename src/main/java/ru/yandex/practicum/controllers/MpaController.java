@@ -2,17 +2,11 @@ package ru.yandex.practicum.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.exceptions.NotFoundException;
-import ru.yandex.practicum.model.Film;
 import ru.yandex.practicum.model.Mpa;
 import ru.yandex.practicum.service.MpaService;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @RestController
 @Slf4j

@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.exceptions.NotFoundException;
-import ru.yandex.practicum.exceptions.ServerErrorException;
 import ru.yandex.practicum.exceptions.ValidationException;
 import ru.yandex.practicum.model.Film;
 import ru.yandex.practicum.storage.FilmStorage;
@@ -13,18 +12,19 @@ import ru.yandex.practicum.storage.FilmStorage;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class FilmService {
+
     private static final LocalDate RELEASE_DATE = LocalDate.of(1895, Month.DECEMBER, 28);
     @Qualifier("FilmDbStorage")
     private FilmStorage filmStorage;
     private LikeService likeService;
 
     @Autowired
-    public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage, LikeService likeService) {
+    public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage,
+                       LikeService likeService) {
         this.filmStorage = filmStorage;
         this.likeService = likeService;
     }

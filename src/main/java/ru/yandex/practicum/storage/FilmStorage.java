@@ -12,7 +12,9 @@ public interface FilmStorage {
 
     Film update(Film film);
 
-    Film remove(Film film);
+    void remove(Film film);
+
+    void removeAll();
 
     Set<Film> getAll();
 

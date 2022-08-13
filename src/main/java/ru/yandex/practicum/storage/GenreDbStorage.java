@@ -1,15 +1,12 @@
 package ru.yandex.practicum.storage;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.JdbcTemplate;;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.model.Film;
 import ru.yandex.practicum.model.Genre;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -17,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Repository
 @Component("GenreDbStorage")
-public class GenreDbStorage implements GenreStorage{
+public class GenreDbStorage implements GenreStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -26,9 +23,9 @@ public class GenreDbStorage implements GenreStorage{
         this.jdbcTemplate = jdbcTemplate;
     }
 
-
     @Override
     public void setFilmGenre(Film film) {
+
         String sqlDeleteQuery =
                 "delete from films_genres " +
                         "where FILM_ID = ?";
@@ -37,8 +34,8 @@ public class GenreDbStorage implements GenreStorage{
                 "values (?, ?)";
 
         if (film.getGenres() != null) {
-            for (Genre genre: film.getGenres()) {
-                jdbcTemplate.update(sqlInsertQuery, genre.getId(),film.getId());
+            for (Genre genre : film.getGenres()) {
+                jdbcTemplate.update(sqlInsertQuery, genre.getId(), film.getId());
             }
         } else {
             film.setGenres(null);
@@ -47,6 +44,7 @@ public class GenreDbStorage implements GenreStorage{
 
     @Override
     public Set<Genre> loadFilmGenres(long filmId) {
+
         String sqlQuery = "select g.ID, g.NAME from films_genres as fg " +
                 "join genres as g on g.ID = fg.GENRE_ID " +
                 "where fg.FILM_ID = ?";
@@ -77,6 +75,7 @@ public class GenreDbStorage implements GenreStorage{
     }
 
     private Genre mapRowToGenre(ResultSet resultSet, int rowNum) throws SQLException {
+
         return Genre.builder()
                 .id(resultSet.getLong("id"))
                 .name(resultSet.getString("name"))

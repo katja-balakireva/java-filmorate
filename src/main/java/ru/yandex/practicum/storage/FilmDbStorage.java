@@ -7,8 +7,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.model.Film;
-import ru.yandex.practicum.model.Genre;
-import ru.yandex.practicum.model.Mpa;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,7 +14,7 @@ import java.util.*;
 
 @Repository
 @Component("FilmDbStorage")
-public class FilmDbStorage implements FilmStorage{
+public class FilmDbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
     @Qualifier("GenreDbStorage")
@@ -72,15 +70,22 @@ public class FilmDbStorage implements FilmStorage{
     }
 
     @Override
-    public Film remove(Film film) {
+    public void remove(Film film) {
 
         String sqlQuery = "delete from films where ID = ?";
         jdbcTemplate.update(sqlQuery, film.getId());
-        return film;
+    }
+
+    @Override
+    public void removeAll() {
+
+        String sqlQuery = "delete from films";
+        jdbcTemplate.update(sqlQuery);
     }
 
     @Override
     public Set<Film> getAll() {
+
         String sqlQuery = "select * from films";
         Set<Film> allFilms = new HashSet<>(jdbcTemplate.query(sqlQuery, this::mapRowToFilm));
         return allFilms;
@@ -100,11 +105,10 @@ public class FilmDbStorage implements FilmStorage{
         }
     }
 
-    //mappers
+    @Override
     public Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException {
 
-        return
-                Film.builder()
+        return Film.builder()
                 .id(resultSet.getLong("id"))
                 .name(resultSet.getString("name"))
                 .description(resultSet.getString("description"))
@@ -116,11 +120,12 @@ public class FilmDbStorage implements FilmStorage{
     }
 
     private Map<String, Object> toMap(Film film) {
+
         Map<String, Object> values = new HashMap<>();
-        values.put("name",film.getName());
-        values.put("description",film.getDescription());
-        values.put("release_date",film.getReleaseDate());
-        values.put("duration",film.getDuration());
+        values.put("name", film.getName());
+        values.put("description", film.getDescription());
+        values.put("release_date", film.getReleaseDate());
+        values.put("duration", film.getDuration());
         return values;
     }
 }

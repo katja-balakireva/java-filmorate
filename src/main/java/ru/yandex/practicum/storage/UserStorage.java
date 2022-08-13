@@ -14,6 +14,8 @@ public interface UserStorage {
 
     User remove(User user);
 
+    void removeAll();
+
     Set<User> getAll();
 
     User getById(long userId);

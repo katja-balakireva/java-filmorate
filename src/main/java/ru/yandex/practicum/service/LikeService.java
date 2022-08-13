@@ -6,15 +6,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.exceptions.NotFoundException;
 import ru.yandex.practicum.exceptions.ServerErrorException;
-import ru.yandex.practicum.exceptions.ValidationException;
 import ru.yandex.practicum.model.Film;
 import ru.yandex.practicum.storage.FilmStorage;
 import ru.yandex.practicum.storage.LikeStorage;
-import ru.yandex.practicum.storage.UserStorage;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,48 +21,26 @@ public class LikeService {
     private LikeStorage likeStorage;
     @Qualifier("FilmDbStorage")
     private FilmStorage filmStorage;
-    @Qualifier("UserDbStorage")
-    private UserStorage userStorage;
 
     @Autowired
-    public LikeService( @Qualifier("LikeDbStorage") LikeStorage likeStorage,
-                        @Qualifier("FilmDbStorage") FilmStorage filmStorage,
-                        @Qualifier("UserDbStorage") UserStorage userStorage) {
+    public LikeService(@Qualifier("LikeDbStorage") LikeStorage likeStorage,
+                       @Qualifier("FilmDbStorage") FilmStorage filmStorage) {
         this.likeStorage = likeStorage;
         this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
     }
 
     public void addLike(long filmId, long likeId) {
 
-        System.out.println("ADD LIKE FROM SERVICE IS CALLED!!!!");
-
-      //  if (!validateLikes(filmId, likeId)) {
-       //     throw new ValidationException("Не пройдена валидация");
-       // }
-      //  if (filmStorage.getById(filmId) != null) {
-        //    if (userStorage.getById(likeId) != null) {
-                likeStorage.addLike(filmId, likeId);
-          //  } else {
-            //    throw new NotFoundException("Пользователь не найден");
-            //}
-        //} else {
-          //  throw new ServerErrorException("Ошибка сервера");
-        //}
+        if (validateLikes(likeId, filmId)) {
+            likeStorage.addLike(filmId, likeId);
+        }
     }
 
     public void removeLike(long likeId, long filmId) {
 
-        if (!validateLikes(likeId, filmId)) {
-            return;
+        if (validateLikes(likeId, filmId)) {
+            likeStorage.removeLike(likeId, filmId);
         }
-//
-//        if (userStorage.getById(likeId) == null) {
-//            throw new NotFoundException("Пользователь не найден");
-//        }
-//        if (filmStorage.getById(filmId) != null) {
-            likeStorage.removeLike(likeId,filmId);
-//        } else throw new ServerErrorException("Ошибка сервера");
     }
 
     public void removeAllLikes(long filmId) {
@@ -78,26 +52,29 @@ public class LikeService {
         }
     }
 
-    public int likesCountByFilm(long filmId) {
-        return likeStorage.likesCountByFilm(filmId);
-    }
-
     public List<Film> getPopularFilms(int count) {
-        return likeStorage.getPopularFilms(count);
+
+        Set<Film> allFilms = filmStorage.getAll();
+        Map<Film, Integer> likesMap = new HashMap<>();
+
+        for (Film film : allFilms) {
+            likesMap.put(film, likeStorage.likesCountByFilm(film.getId()));
+        }
+
+        List<Film> sorted = likesMap.entrySet().stream()
+                .sorted(Map.Entry.<Film, Integer>comparingByValue().reversed())
+                .map(Map.Entry::getKey)
+                .limit(count)
+                .collect(Collectors.toList());
+
+        return sorted;
     }
 
     public boolean validateLikes(long filmId, long likeId) {
-        if (likeStorage.likesListByFilm(filmId).isEmpty()) {
-            log.warn("Список лайков фильма с id {} пуст", filmId);
-            throw new NotFoundException("Список лайков фильма пуст");
-        }
-        if (!likeStorage.likesListByFilm(filmId).contains(likeId)) {
-            log.warn("Фильм с id {} не содержит лайк с id {}", filmId, likeId);
-            throw new NotFoundException("Лайк не найден");
-        }
-        if (likeId < 0) {
-            log.warn("id лайка не может быть отрицательным: {}", likeId);
-            throw new NotFoundException("Лайк не существует");
+
+        if (likeId < 0 || filmId < 0) {
+            log.warn("id лайка или фильма не может быть отрицательным: {}, {}", likeId, filmId);
+            throw new NotFoundException("Лайк или фильм не существует");
         }
         return true;
     }

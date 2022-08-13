@@ -2,17 +2,12 @@ package ru.yandex.practicum.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.exceptions.NotFoundException;
-import ru.yandex.practicum.exceptions.ServerErrorException;
-import ru.yandex.practicum.exceptions.ValidationException;
 import ru.yandex.practicum.model.Film;
 import ru.yandex.practicum.service.FilmService;
 import ru.yandex.practicum.service.LikeService;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -65,7 +60,6 @@ public class FilmController {
 
     @PutMapping(value = "{id}/like/{userId}")
     public void addLike(@PathVariable long id, @PathVariable long userId) {
-        System.out.println("ADD LIKE FROM CONTROLLER IS CALLED!!!!");
         log.info("Пользователь c id {} поставил лайк фильму с id {}", userId, id);
         likeService.addLike(id, userId);
     }
@@ -77,7 +71,8 @@ public class FilmController {
     }
 
     @GetMapping(value = "/popular")
-    public List<Film> getPopularFilms(@RequestParam(value = "count", defaultValue = "10",
+    public List<Film> getPopularFilms(@RequestParam(value = "count",
+            defaultValue = "10",
             required = false) int count) {
         List<Film> popularFilms = likeService.getPopularFilms(count);
         log.info("Получен список {} самых популярных фильмов: {} ", popularFilms.size(), popularFilms);
