@@ -4,9 +4,6 @@
 
 https://app.quickdatabasediagrams.com/#/d/gwIYvU
 
-![filmorate-diagram](https://user-images.githubusercontent.com/97680873/181720810-a85de567-26d5-4d92-9bd7-45bc223af7ac.png)
 
-**Sample SQL requests**
-
-
+![2022-08-11_12-45-29](https://user-images.githubusercontent.com/97680873/184506271-7059a3cc-300a-45c3-8329-1f674d3df9ba.png)
 
