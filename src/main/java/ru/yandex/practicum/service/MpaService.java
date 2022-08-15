@@ -11,7 +11,6 @@ import ru.yandex.practicum.storage.MpaStorage;
 import java.util.List;
 
 @Service
-@Slf4j
 public class MpaService {
 
     @Qualifier("MpaDbStorage")

@@ -11,7 +11,6 @@ import ru.yandex.practicum.storage.GenreStorage;
 import java.util.Set;
 
 @Service
-@Slf4j
 public class GenreService {
 
     @Qualifier("GenreDbStorage")

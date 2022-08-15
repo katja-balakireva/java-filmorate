@@ -70,7 +70,7 @@ public class LikeService {
         return sorted;
     }
 
-    public boolean validateLikes(long filmId, long likeId) {
+    private boolean validateLikes(long filmId, long likeId) {
 
         if (likeId < 0 || filmId < 0) {
             log.warn("id лайка или фильма не может быть отрицательным: {}, {}", likeId, filmId);
