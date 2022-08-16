@@ -1,13 +1,15 @@
 package ru.yandex.practicum.model;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode(of = "id")
 @Builder
 public class Film {
 
@@ -16,14 +18,7 @@ public class Film {
     private String description;
     private LocalDate releaseDate;
     private int duration;
-    private Set<Long> likesId;
-
-    public void setAndCheckLikes(long userId) {
-        if (this.likesId == null) {
-            this.likesId = new HashSet<>();
-            this.likesId.add(userId);
-        } else {
-            this.likesId.add(userId);
-        }
-    }
+    private Mpa mpa;
+    private Set<Genre> genres;
 }
+

@@ -2,6 +2,8 @@ package ru.yandex.practicum.storage;
 
 import ru.yandex.practicum.model.User;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Set;
 
 public interface UserStorage {
@@ -12,7 +14,11 @@ public interface UserStorage {
 
     User remove(User user);
 
+    void removeAll();
+
     Set<User> getAll();
 
     User getById(long userId);
+
+    User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException;
 }

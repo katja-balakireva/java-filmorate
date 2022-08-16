@@ -2,18 +2,14 @@ package ru.yandex.practicum.model;
 
 import lombok.*;
 
-import java.time.LocalDate;
-
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Builder
-public class User {
+public class Genre {
 
     private long id;
-    private String email;
-    private String login;
     private String name;
-    private LocalDate birthday;
 }

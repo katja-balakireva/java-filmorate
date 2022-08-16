@@ -2,16 +2,11 @@ package ru.yandex.practicum.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.exceptions.NotFoundException;
-import ru.yandex.practicum.exceptions.ServerErrorException;
-import ru.yandex.practicum.exceptions.ValidationException;
 import ru.yandex.practicum.model.User;
 import ru.yandex.practicum.service.UserService;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -84,23 +79,5 @@ public class UserController {
         List<User> commonFriendsList = userService.getCommonFriends(id, otherId);
         log.info("Получены общие друзья пользователей {} и {}: {}", id, otherId, commonFriendsList);
         return commonFriendsList;
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST) //code 400
-    public Map<String, String> handleValidationException(final ValidationException e) {
-        return Map.of("validation error", "Не пройдена валидация");
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND) //code 404
-    public Map<String, String> handleNotFoundException(final NotFoundException e) {
-        return Map.of("not found", "Объект не найден");
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR) //code 500
-    public Map<String, String> handleServerErrorException(final ServerErrorException e) {
-        return Map.of("error", "Ошибка на сервере");
     }
 }
